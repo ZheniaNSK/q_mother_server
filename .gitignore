@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.tox/
+.venv/
+venv/
+env/
+ENV/
+bin/
+lib/
+include/
+share/
+
+# Editor/OS Files
+.DS_Store
+.vscode/ # VS Code settings (optional, can be useful to share some settings)
+.idea/   # PyCharm settings
+
+# Environment variables
+.env
+.env.*
+secrets.ini
+
+# Project-specific build artifacts or temporary files
+dist/
+build/
+*.egg-info/
+
+# specific to pypa/pipenv
+# Pipfile.lock is generally recommended to be included in version control
+
+# FastAPI specific (e.g. database files, etc., if any are created locally)
+# Adjust based on your project structure
+
