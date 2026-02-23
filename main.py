@@ -1,8 +1,15 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from core import settings
+from core import settings, db_helper
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await db_helper.engine.dispose()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 if __name__ == "__main__":
