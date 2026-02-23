@@ -1,0 +1,1 @@
+from .impl_product_repository import product_repo
