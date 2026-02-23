@@ -1,1 +1,1 @@
-from .impl_user_repository import category_repo
+from .impl_category_repository import category_repo
