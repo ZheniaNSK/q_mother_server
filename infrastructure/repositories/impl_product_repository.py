@@ -1,6 +1,6 @@
 from typing import List
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.dto.product import ProductCreate, ProductUpdate
 from core.models import Product
@@ -71,6 +71,24 @@ class InMemoryProductRepository(ProductRepository):
         await session.commit()
 
         return None
+    
+    async def check_unique_fields(
+        self,
+        id: UUID | None,
+        title: str | None,
+        session: AsyncSession,
+    ) -> Product | None:
+        filter_or = []
+        filter_and = []
+
+        if id is not None:
+            filter_and.append(Product.id != id)
+        if title is not None:
+            filter_or.append(Product.title == title)
+
+        stmt = select(Product).where(and_(or_(*filter_or), *filter_and))
+
+        return await session.scalar(stmt)
 
 
 product_repo = InMemoryProductRepository()

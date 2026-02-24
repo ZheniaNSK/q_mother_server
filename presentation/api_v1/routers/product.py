@@ -10,6 +10,7 @@ from application.dto.product import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from core import db_helper
 from infrastructure.repositories import product_repo
+from ..utils import check_unique_product_fields
 
 
 router = APIRouter(prefix="/products", tags=["Products"])
@@ -36,6 +37,11 @@ async def create(
     dto: ProductCreate,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Product:
+    await check_unique_product_fields(
+        title=dto.title,
+        session=session,
+    )
+
     return await product_repo.create(
         dto=dto,
         session=session,
@@ -48,6 +54,12 @@ async def update(
     product: Product = Depends(product_by_id),
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Product:
+    await check_unique_product_fields(
+        id=product.id,
+        title=dto.title,
+        session=session,
+    )
+
     return await product_repo.update(
         product=product,
         dto=dto,
