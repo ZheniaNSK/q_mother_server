@@ -1,9 +1,7 @@
 from typing import List
 from uuid import UUID
-
-from sqlalchemy import select
+from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from application.dto.category import CategoryCreate, CategoryUpdate
 from core.models import Category
 from domain.repositories import CategoryRepository
@@ -31,7 +29,7 @@ class InMemoryCategoryRepository(CategoryRepository):
         self,
         session: AsyncSession,
     ) -> List[Category]:
-        stmt = select(Category).order_by(Category.id)
+        stmt = select(Category).order_by(Category.name)
         categories = await session.scalars(stmt)
 
         return list(categories)
@@ -73,6 +71,24 @@ class InMemoryCategoryRepository(CategoryRepository):
         await session.commit()
 
         return None
+
+    async def check_unique_fields(
+        self,
+        id: UUID | None,
+        name: str | None,
+        session: AsyncSession,
+    ) -> Category | None:
+        filter_or = []
+        filter_and = []
+
+        if id is not None:
+            filter_and.append(Category.id != id)
+        if name is not None:
+            filter_or.append(Category.name == name)
+
+        stmt = select(Category).where(and_(or_(*filter_or), *filter_and))
+
+        return await session.scalar(stmt)
 
 
 category_repo = InMemoryCategoryRepository()

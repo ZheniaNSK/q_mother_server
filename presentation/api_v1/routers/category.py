@@ -10,6 +10,7 @@ from application.dto.category import (
     CategoryUpdate,
     CategoryResponse,
 )
+from ..utils import check_unique_category_fields
 
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
@@ -40,6 +41,11 @@ async def create(
     dto: CategoryCreate,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Category:
+    await check_unique_category_fields(
+        name=dto.name,
+        session=session,
+    )
+
     return await category_repo.create(
         dto=dto,
         session=session,
@@ -52,6 +58,12 @@ async def update(
     category: Category = Depends(category_by_id),
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Category:
+    await check_unique_category_fields(
+        id=category.id,
+        name=dto.name,
+        session=session,
+    )
+
     return await category_repo.update(
         category=category,
         dto=dto,
